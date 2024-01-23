@@ -89,30 +89,47 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* Input) override;
 
 private:
-	void Input_OnLookMouse(const FInputActionValue& ActionValue);
 
-	void Input_OnLook(const FInputActionValue& ActionValue);
+	
+	//void Input_OnLookMouse(const FInputActionValue& ActionValue);
+	//Mouse Input Action
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
+	void Input_OnLookMouse(const FVector2D& Value);
 
-	void Input_OnMove(const FInputActionValue& ActionValue);
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
+	void Input_OnLook(const FVector2D& Value);
 
-	void Input_OnSprint(const FInputActionValue& ActionValue);
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
+	void Input_OnMove(const FVector2D& Value);
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
+	void Input_OnSprint(bool Value);
+
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnWalk();
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnCrouch();
 
-	void Input_OnJump(const FInputActionValue& ActionValue);
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
+	void Input_OnJump(bool Value);
 
-	void Input_OnAim(const FInputActionValue& ActionValue);
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
+	void Input_OnAim(bool Value);
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnRagdoll();
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnRoll();
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnRotationMode();
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnViewMode();
 
+	UFUNCTION(BlueprintCallable, Category = "Als|Input")
 	void Input_OnSwitchShoulder();
 
 	// Debug
