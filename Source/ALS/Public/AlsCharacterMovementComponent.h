@@ -206,6 +206,39 @@ public:
 	void SetInputBlocked(bool bNewInputBlocked);
 
 	bool TryConsumePrePenetrationAdjustmentVelocity(FVector& OutVelocity);
+
+/*****************************************Custom Code Area************************************************************/
+public:
+
+	//Should use force trace
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ForceBoneMovement")
+	bool UseForceTraceBone = false;
+
+	//Skip trace function, use name variable only
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ForceBoneMovement")
+	bool UseFallbackBoneOnly = false;
+
+	//If trace value is none, should use fall back name
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ForceBoneMovement")
+	bool UseFallbackBoneName = false;
+
+	//Fall back name if trace is none, use for do it in BP
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ForceBoneMovement")
+	FName ForcedBoneName = TEXT("None");
+
+	//Trace channel of Force Trace function
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ForceBoneMovement")
+	TArray<TEnumAsByte<EObjectTypeQuery>> ForceTraceObjectChannels;
+
+public:
+	//force trace channel to get a bone name
+	UFUNCTION(BlueprintCallable, Category = "ForceBoneMovement")
+	FName ForceTraceFloorBoneName(const FHitResult& HitResult) const;
+
+	//Override Find Floor Function
+	void FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation, const FHitResult* DownwardSweepResult /* = NULL */) const override;
+
+/*****************************************Custom Code Area************************************************************/
 };
 
 inline const FAlsMovementGaitSettings& UAlsCharacterMovementComponent::GetGaitSettings() const

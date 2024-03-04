@@ -213,3 +213,9 @@ void AAlsCharacterExample::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo
 
 	Super::DisplayDebug(Canvas, DisplayInfo, Unused, VerticalLocation);
 }
+
+void AAlsCharacterExample::FellOutOfWorld(const class UDamageType& dmgType)
+{
+	OnFellOutOfWorld();
+	Super::FellOutOfWorld(dmgType);
+}

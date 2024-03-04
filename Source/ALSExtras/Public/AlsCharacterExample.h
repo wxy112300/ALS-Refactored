@@ -136,4 +136,11 @@ private:
 
 public:
 	virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DisplayInfo, float& Unused, float& VerticalLocation) override;
+
+	//Use to override OnFellOutOfWorld
+	void FellOutOfWorld(const class UDamageType& dmgType) override;
+
+	//When character fall out of the world, call this in blueprint
+	UFUNCTION(BlueprintImplementableEvent, Category = "Als|Gameplay")
+	void OnFellOutOfWorld();
 };

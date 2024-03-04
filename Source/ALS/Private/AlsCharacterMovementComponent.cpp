@@ -9,6 +9,8 @@
 #include "Utility/AlsMacros.h"
 #include "Utility/AlsUtility.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AlsCharacterMovementComponent)
 
 void FAlsCharacterNetworkMoveData::ClientFillNetworkMoveData(const FSavedMove_Character& Move, const ENetworkMoveType MoveType)
@@ -988,4 +990,73 @@ bool UAlsCharacterMovementComponent::TryConsumePrePenetrationAdjustmentVelocity(
 	bPrePenetrationAdjustmentVelocityValid = false;
 
 	return true;
+}
+
+FName UAlsCharacterMovementComponent::ForceTraceFloorBoneName(const FHitResult& HitResult) const
+{
+	FName BoneNameOut = HitResult.BoneName;//Set To Input BoneName
+	TArray<AActor*> IgnoreActors;
+	AActor* OwnerActor = GetOwner();
+	FHitResult TestOutHit;
+	FVector Start = HitResult.TraceStart;
+	FVector End = HitResult.TraceEnd;
+	float Radius = 96;
+	float HalfHeight = 42;
+	if (OwnerActor != NULL)
+	{
+		if (ACharacter* OwningCharacter = Cast<ACharacter>(OwnerActor))
+		{
+			IgnoreActors.AddUnique(OwnerActor);
+			Radius = OwningCharacter->GetCapsuleComponent()->GetScaledCapsuleRadius();
+			HalfHeight = OwningCharacter->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		}
+	}
+	bool isHit = UKismetSystemLibrary::CapsuleTraceSingleForObjects(GetWorld(), Start, End, Radius, HalfHeight, ForceTraceObjectChannels, true, IgnoreActors, EDrawDebugTrace::None, TestOutHit, true);
+	if (isHit)
+	{
+		if (TestOutHit.bBlockingHit)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Hitting: %s"), *TestOutHit.GetComponent()->GetName()));
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Bone: %s"), *TestOutHit.BoneName.ToString()));
+			BoneNameOut = TestOutHit.BoneName;
+		}
+	}
+	return BoneNameOut;
+}
+
+void UAlsCharacterMovementComponent::FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation, const FHitResult* DownwardSweepResult /* = NULL */) const
+{
+	Super::FindFloor(CapsuleLocation, OutFloorResult, bCanUseCachedLocation, DownwardSweepResult);
+	//Hi-jack the bone name
+	if (UseForceTraceBone)
+	{
+		//If HitResult is None, active BoneName replace
+		if (OutFloorResult.HitResult.BoneName.IsNone())
+		{
+			//Check if Target is Skeletal Mesh, this is Cast to in C++, and Only works with SkeletalMesh
+			if (USkeletalMeshComponent* SkeletalMeshCheck = Cast<USkeletalMeshComponent>(OutFloorResult.HitResult.Component))
+			{
+				if (UseFallbackBoneOnly)
+				{
+					//If we only need to replace the bone name, without run the trace
+					OutFloorResult.HitResult.BoneName = ForcedBoneName;
+				}
+				else
+				{
+					//Run a trace to find the bone name
+					FName BoneNameChecked =	ForceTraceFloorBoneName(OutFloorResult.HitResult);
+					if (BoneNameChecked.IsNone() && UseFallbackBoneName)
+					{
+						//If the bone name is not valid, use last result
+						OutFloorResult.HitResult.BoneName = ForcedBoneName;
+					}
+					else
+					{
+						//Use the name from the trace
+						OutFloorResult.HitResult.BoneName = BoneNameChecked;
+					}
+				}
+			}
+		}
+	}
 }
