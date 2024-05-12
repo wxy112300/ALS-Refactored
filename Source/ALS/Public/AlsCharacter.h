@@ -125,6 +125,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void CalcCamera(float DeltaTime, FMinimalViewInfo& ViewInfo) override;
+
 public:
 	virtual void PostNetReceiveLocationAndRotation() override;
 
@@ -135,6 +137,10 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	virtual void Restart() override;
+
+protected:
+	UFUNCTION(BlueprintNativeEvent, Category = "Als Character", Meta = (ReturnDisplayName = "Handled"))
+	bool OnCalculateCamera(float DeltaTime, FMinimalViewInfo& ViewInfo);
 
 private:
 	void RefreshMeshProperties() const;
@@ -222,6 +228,8 @@ public:
 
 protected:
 	void SetRotationMode(const FGameplayTag& NewRotationMode);
+
+	virtual void NotifyRotationModeChanged(const FGameplayTag& PreviousRotationMode);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Als Character")
 	void OnRotationModeChanged(const FGameplayTag& PreviousRotationMode);
@@ -387,9 +395,9 @@ private:
 
 	void RefreshLocomotionEarly();
 
-	void RefreshLocomotion(float DeltaTime);
+	void RefreshLocomotion();
 
-	void RefreshLocomotionLate(float DeltaTime);
+	void RefreshLocomotionLate();
 
 	// Jumping
 
@@ -423,7 +431,7 @@ protected:
 
 	void RefreshGroundedAimingRotation(float DeltaTime);
 
-	bool RefreshConstrainedAimingRotation(float DeltaTime, bool bApplySecondaryConstraint = false);
+	bool ConstrainAimingRotation(FRotator& ActorRotation, float DeltaTime, bool bApplySecondaryConstraint = false);
 
 private:
 	void ApplyRotationYawSpeedAnimationCurve(float DeltaTime);
@@ -435,7 +443,7 @@ protected:
 
 	void RefreshInAirAimingRotation(float DeltaTime);
 
-	void RefreshRotation(float TargetYawAngle, float DeltaTime, float RotationInterpolationSpeed);
+	void RefreshRotationSmooth(float TargetYawAngle, float DeltaTime, float RotationInterpolationSpeed);
 
 	void RefreshRotationExtraSmooth(float TargetYawAngle, float DeltaTime,
 	                                float RotationInterpolationSpeed, float TargetYawAngleRotationSpeed);
@@ -445,6 +453,8 @@ protected:
 	void RefreshTargetYawAngleUsingLocomotionRotation();
 
 	void RefreshTargetYawAngle(float TargetYawAngle);
+
+	void RefreshTargetYawAngleSmooth(float TargetYawAngle, float DeltaTime, float TargetYawAngleRotationSpeed);
 
 	void RefreshViewRelativeTargetYawAngle();
 
@@ -665,4 +675,3 @@ inline const FAlsRagdollingState& AAlsCharacter::GetRagdollingState() const
 {
 	return RagdollingState;
 }
-

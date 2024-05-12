@@ -121,7 +121,10 @@ void UAlsCameraComponent::DisplayDebugCurves(const UCanvas* Canvas, const float 
 	TArray<FName> CurveNames;
 	GetAnimInstance()->GetAllCurveNames(CurveNames);
 
-	CurveNames.Sort([](const FName& A, const FName& B) { return A.LexicalLess(B); });
+	CurveNames.Sort([](const FName& A, const FName& B)
+	{
+		return A.LexicalLess(B);
+	});
 
 	TStringBuilder<32> CurveValueBuilder;
 
@@ -237,17 +240,17 @@ void UAlsCameraComponent::DisplayDebugShapes(const UCanvas* Canvas, const float 
 
 	VerticalLocation += RowOffset;
 
-	static const auto CameraFovText{
-		FText::AsCultureInvariant(FName::NameToDisplayString(GET_MEMBER_NAME_STRING_CHECKED(ThisClass, CameraFov), false))
+	static const auto CameraFieldOfViewText{
+		FText::AsCultureInvariant(FName::NameToDisplayString(GET_MEMBER_NAME_STRING_CHECKED(ThisClass, CameraFieldOfView), false))
 	};
 
 	Color = FLinearColor::White;
 	Text.SetColor(Color);
 
-	Text.Text = CameraFovText;
+	Text.Text = CameraFieldOfViewText;
 	Text.Draw(Canvas->Canvas, {HorizontalLocation, VerticalLocation});
 
-	DebugStringBuilder.Appendf(TEXT("%.2f"), CameraFov);
+	DebugStringBuilder.Appendf(TEXT("%.2f"), CameraFieldOfView);
 
 	Text.Text = FText::AsCultureInvariant(FString{DebugStringBuilder});
 	Text.Draw(Canvas->Canvas, {HorizontalLocation + ColumnOffset, VerticalLocation});

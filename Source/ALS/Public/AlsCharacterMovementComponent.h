@@ -127,6 +127,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual FVector ConsumeInputVector() override;
+
 	virtual void SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode = 0) override;
 
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
@@ -156,8 +158,6 @@ protected:
 	virtual void PhysNavWalking(float DeltaTime, int32 Iterations) override;
 
 	virtual void PhysCustom(float DeltaTime, int32 Iterations) override;
-
-	virtual FVector ConsumeInputVector() override;
 
 public:
 	virtual void ComputeFloorDist(const FVector& CapsuleLocation, float LineDistance, float SweepDistance, FFindFloorResult& OutFloorResult,
@@ -189,9 +189,15 @@ private:
 	void RefreshGaitSettings();
 
 public:
+	const FGameplayTag& GetRotationMode() const;
+
 	void SetRotationMode(const FGameplayTag& NewRotationMode);
 
+	const FGameplayTag& GetStance() const;
+
 	void SetStance(const FGameplayTag& NewStance);
+
+	const FGameplayTag& GetMaxAllowedGait() const;
 
 	void SetMaxAllowedGait(const FGameplayTag& NewMaxAllowedGait);
 
@@ -244,4 +250,19 @@ public:
 inline const FAlsMovementGaitSettings& UAlsCharacterMovementComponent::GetGaitSettings() const
 {
 	return GaitSettings;
+}
+
+inline const FGameplayTag& UAlsCharacterMovementComponent::GetRotationMode() const
+{
+	return RotationMode;
+}
+
+inline const FGameplayTag& UAlsCharacterMovementComponent::GetStance() const
+{
+	return Stance;
+}
+
+inline const FGameplayTag& UAlsCharacterMovementComponent::GetMaxAllowedGait() const
+{
+	return MaxAllowedGait;
 }

@@ -37,7 +37,7 @@ struct ALS_API FAlsSpringVectorState
 	void Reset();
 };
 
-UCLASS()
+UCLASS(Meta = (BlueprintThreadSafe))
 class ALS_API UAlsMath : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
@@ -100,7 +100,7 @@ public:
 	// Remaps the angle from the [175, 180] range to [-185, -180]. Used to
 	// make the character rotate counterclockwise during a 180 degree turn.
 	template <typename ValueType> requires std::is_floating_point_v<ValueType>
-	static constexpr float RemapAngleForCounterClockwiseRotation(ValueType Angle);
+	static constexpr ValueType RemapAngleForCounterClockwiseRotation(ValueType Angle);
 
 	UFUNCTION(BlueprintPure, Category = "ALS|Math|Vector", Meta = (AutoCreateRefTerm = "Vector", ReturnDisplayName = "Vector"))
 	static FVector ClampMagnitude01(const FVector& Vector);
@@ -143,6 +143,9 @@ public:
 		DisplayName = "Slerp (Skip Normalization)", Meta = (AutoCreateRefTerm = "From, To", ReturnDisplayName = "Direction"))
 	static FVector SlerpSkipNormalization(const FVector& From, const FVector& To, float Alpha);
 
+	UFUNCTION(BlueprintPure, Category = "ALS|Math|Rotation", Meta = (AutoCreateRefTerm = "TwistAxis", ReturnDisplayName = "Twist"))
+	static FQuat GetTwist(const FQuat& Quaternion, const FVector& TwistAxis = FVector::UpVector);
+
 	UFUNCTION(BlueprintCallable, Category = "ALS|Math|Input", Meta = (ReturnDisplayName = "Direction"))
 	static EAlsMovementDirection CalculateMovementDirection(float Angle, float ForwardHalfAngle, float AngleThreshold);
 
@@ -154,7 +157,7 @@ public:
 };
 
 template <typename ValueType> requires std::is_floating_point_v<ValueType>
-constexpr float UAlsMath::RemapAngleForCounterClockwiseRotation(const ValueType Angle)
+constexpr ValueType UAlsMath::RemapAngleForCounterClockwiseRotation(const ValueType Angle)
 {
 	if (Angle > 180.0f - CounterClockwiseRotationAngleThreshold)
 	{

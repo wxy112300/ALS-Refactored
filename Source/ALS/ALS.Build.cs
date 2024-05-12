@@ -8,6 +8,7 @@ public class ALS : ModuleRules
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
 
 		bEnableNonInlinedGenCppWarnings = true;
+		UnsafeTypeCastWarningLevel = WarningLevel.Warning;
 
 		PublicDependencyModuleNames.AddRange(new[]
 		{
@@ -21,7 +22,12 @@ public class ALS : ModuleRules
 
 		if (Target.Type == TargetRules.TargetType.Editor)
 		{
-			PrivateDependencyModuleNames.AddRange(new[] {"MessageLog"});
+			PrivateDependencyModuleNames.AddRange(new[]
+			{
+				"MessageLog"
+			});
 		}
+
+		SetupIrisSupport(Target);
 	}
 }
