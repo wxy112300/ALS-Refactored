@@ -35,7 +35,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings|Als Character|Desired State",
 		ReplicatedUsing = "OnReplicated_DesiredAiming")
-	uint8 bDesiredAiming : 1;
+	uint8 bDesiredAiming : 1 {false};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings|Als Character|Desired State", Replicated)
 	FGameplayTag DesiredRotationMode{AlsRotationModeTags::ViewDirection};
@@ -78,17 +78,17 @@ protected:
 	// base space. In most cases, it is better to use FAlsViewState::Rotation to take advantage of network smoothing.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient,
 		ReplicatedUsing = "OnReplicated_ReplicatedViewRotation")
-	FRotator ReplicatedViewRotation;
+	FRotator ReplicatedViewRotation{ForceInit};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsViewState ViewState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient, Replicated)
-	FVector_NetQuantizeNormal InputDirection;
+	FVector_NetQuantizeNormal InputDirection{ForceInit};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character",
 		Transient, Replicated, Meta = (ClampMin = -180, ClampMax = 180, ForceUnits = "deg"))
-	float DesiredVelocityYawAngle;
+	float DesiredVelocityYawAngle{0.0f};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsLocomotionState LocomotionState;
@@ -97,7 +97,7 @@ protected:
 	FAlsMantlingState MantlingState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient, Replicated)
-	FVector_NetQuantize RagdollTargetLocation;
+	FVector_NetQuantize RagdollTargetLocation{ForceInit};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State|Als Character", Transient)
 	FAlsRagdollingState RagdollingState;
@@ -373,7 +373,7 @@ private:
 	void OnReplicated_ReplicatedViewRotation();
 
 public:
-	void CorrectViewNetworkSmoothing(const FRotator& NewTargetRotation, bool bRelativeTargetRotation);
+	void CorrectViewNetworkSmoothing(const FRotator& NewTargetRotation, bool bRotationIsBaseRelative);
 
 public:
 	const FAlsViewState& GetViewState() const;
@@ -389,7 +389,7 @@ public:
 	const FAlsLocomotionState& GetLocomotionState() const;
 
 private:
-	void SetDesiredVelocityYawAngle(float NewDesiredVelocityYawAngle);
+	void SetDesiredVelocityYawAngle(float NewVelocityYawAngle);
 
 	void RefreshLocomotionLocationAndRotation();
 
@@ -443,18 +443,17 @@ protected:
 
 	void RefreshInAirAimingRotation(float DeltaTime);
 
-	void RefreshRotationSmooth(float TargetYawAngle, float DeltaTime, float RotationInterpolationSpeed);
+	void SetRotationSmooth(float TargetYawAngle, float DeltaTime, float InterpolationSpeed);
 
-	void RefreshRotationExtraSmooth(float TargetYawAngle, float DeltaTime,
-	                                float RotationInterpolationSpeed, float TargetYawAngleRotationSpeed);
+	void SetRotationExtraSmooth(float TargetYawAngle, float DeltaTime, float InterpolationSpeed, float TargetYawAngleRotationSpeed);
 
-	void RefreshRotationInstant(float TargetYawAngle, ETeleportType Teleport = ETeleportType::None);
+	void SetRotationInstant(float TargetYawAngle, ETeleportType Teleport = ETeleportType::None);
 
 	void RefreshTargetYawAngleUsingLocomotionRotation();
 
-	void RefreshTargetYawAngle(float TargetYawAngle);
+	void SetTargetYawAngle(float TargetYawAngle);
 
-	void RefreshTargetYawAngleSmooth(float TargetYawAngle, float DeltaTime, float TargetYawAngleRotationSpeed);
+	void SetTargetYawAngleSmooth(float TargetYawAngle, float DeltaTime, float RotationSpeed);
 
 	void RefreshViewRelativeTargetYawAngle();
 
@@ -579,7 +578,7 @@ private:
 
 	FVector RagdollTraceGround(bool& bGrounded) const;
 
-	void LimitRagdollSpeed() const;
+	void ConstraintRagdollSpeed() const;
 
 	// Debug
 

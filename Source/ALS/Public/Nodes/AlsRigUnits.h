@@ -44,6 +44,7 @@ public:
 	virtual void Initialize() override;
 
 	RIGVM_METHOD()
+	// ReSharper disable once CppFunctionIsNotImplemented
 	virtual void Execute() override;
 };
 
@@ -76,7 +77,7 @@ public:
 	FVector ItemBProjectionLocation{ForceInit};
 
 	UPROPERTY(Transient, Meta = (Output))
-	FVector Direction{FVector::ForwardVector};
+	FVector PoleDirection{FVector::XAxisVector};
 
 	UPROPERTY(Transient)
 	bool bInitialized{false};
@@ -94,6 +95,7 @@ public:
 	virtual void Initialize() override;
 
 	RIGVM_METHOD()
+	// ReSharper disable once CppFunctionIsNotImplemented
 	virtual void Execute() override;
 };
 
@@ -150,5 +152,6 @@ public:
 	virtual void Initialize() override;
 
 	RIGVM_METHOD()
+	// ReSharper disable once CppFunctionIsNotImplemented
 	virtual void Execute() override;
 };

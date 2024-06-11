@@ -5,6 +5,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "GameFramework/PlayerController.h"
+#include "Utility/AlsVector.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AlsCharacterExample)
 
@@ -82,36 +83,35 @@ void AAlsCharacterExample::SetupPlayerInputComponent(UInputComponent* Input)
 	}
 }
 
-//void AAlsCharacterExample::Input_OnLookMouse(const FInputActionValue& ActionValue)
-void AAlsCharacterExample::Input_OnLookMouse(const FVector2D& Value)
+void AAlsCharacterExample::Input_OnLookMouse(const FInputActionValue& ActionValue)
 {
-	//const auto Value{ActionValue.Get<FVector2D>()};
+	const FVector2f Value{ActionValue.Get<FVector2D>()};
 
 	AddControllerPitchInput(Value.Y * LookUpMouseSensitivity);
 	AddControllerYawInput(Value.X * LookRightMouseSensitivity);
 }
 
-void AAlsCharacterExample::Input_OnLook(const FVector2D& Value)
+void AAlsCharacterExample::Input_OnLook(const FInputActionValue& ActionValue)
 {
-	//const auto Value{ActionValue.Get<FVector2D>()};
+	const FVector2f Value{ActionValue.Get<FVector2D>()};
 
 	AddControllerPitchInput(Value.Y * LookUpRate);
 	AddControllerYawInput(Value.X * LookRightRate);
 }
 
-void AAlsCharacterExample::Input_OnMove(const FVector2D& Value)
+void AAlsCharacterExample::Input_OnMove(const FInputActionValue& ActionValue)
 {
-	const auto ClampedValue{UAlsMath::ClampMagnitude012D(Value)};
+	const auto Value{UAlsVector::ClampMagnitude012D(ActionValue.Get<FVector2D>())};
 
-	const auto ForwardDirection{UAlsMath::AngleToDirectionXY(UE_REAL_TO_FLOAT(GetViewState().Rotation.Yaw))};
-	const auto RightDirection{UAlsMath::PerpendicularCounterClockwiseXY(ForwardDirection)};
+	const auto ForwardDirection{UAlsVector::AngleToDirectionXY(UE_REAL_TO_FLOAT(GetViewState().Rotation.Yaw))};
+	const auto RightDirection{UAlsVector::PerpendicularCounterClockwiseXY(ForwardDirection)};
 
-	AddMovementInput(ForwardDirection * ClampedValue.Y + RightDirection * ClampedValue.X);
+	AddMovementInput(ForwardDirection * Value.Y + RightDirection * Value.X);
 }
 
-void AAlsCharacterExample::Input_OnSprint(bool Value)
+void AAlsCharacterExample::Input_OnSprint(const FInputActionValue& ActionValue)
 {
-	SetDesiredGait(Value ? AlsGaitTags::Sprinting : AlsGaitTags::Running);
+	SetDesiredGait(ActionValue.Get<bool>() ? AlsGaitTags::Sprinting : AlsGaitTags::Running);
 }
 
 void AAlsCharacterExample::Input_OnWalk()
@@ -138,9 +138,9 @@ void AAlsCharacterExample::Input_OnCrouch()
 	}
 }
 
-void AAlsCharacterExample::Input_OnJump(bool Value)
+void AAlsCharacterExample::Input_OnJump(const FInputActionValue& ActionValue)
 {
-	if (Value)
+	if (ActionValue.Get<bool>())
 	{
 		if (StopRagdolling())
 		{
@@ -166,9 +166,9 @@ void AAlsCharacterExample::Input_OnJump(bool Value)
 	}
 }
 
-void AAlsCharacterExample::Input_OnAim(bool Value)
+void AAlsCharacterExample::Input_OnAim(const FInputActionValue& ActionValue)
 {
-	SetDesiredAiming(Value);
+	SetDesiredAiming(ActionValue.Get<bool>());
 }
 
 void AAlsCharacterExample::Input_OnRagdoll()

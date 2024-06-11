@@ -52,8 +52,7 @@ FTransform UAlsMontageUtility::ExtractLastRootTransformFromMontage(const UAnimMo
 	return Sequence->ExtractRootTrackTransform(Segment.GetEndPos(), nullptr);
 }
 
-void UAlsMontageUtility::StopMontagesWithAnySharedSlots(UAnimInstance* AnimationInstance,
-                                                        const UAnimMontage* ReferenceMontage,
+void UAlsMontageUtility::StopMontagesWithAnySharedSlots(UAnimInstance* AnimationInstance, const UAnimMontage* ReferenceMontage,
                                                         const float BlendOutDuration)
 {
 	if (!ALS_ENSURE(IsValid(AnimationInstance)) || !ALS_ENSURE(IsValid(ReferenceMontage)))
@@ -61,7 +60,7 @@ void UAlsMontageUtility::StopMontagesWithAnySharedSlots(UAnimInstance* Animation
 		return;
 	}
 
-	TSet<FName> SlotNames;
+	TSet<FName, DefaultKeyFuncs<FName>, TInlineSetAllocator<4>> SlotNames;
 	SlotNames.Reserve(ReferenceMontage->SlotAnimTracks.Num());
 
 	for (const auto& SlotTrack : ReferenceMontage->SlotAnimTracks)

@@ -12,10 +12,12 @@
 #include "RootMotionSources/AlsRootMotionSource_Mantling.h"
 #include "Settings/AlsCharacterSettings.h"
 #include "Utility/AlsConstants.h"
+#include "Utility/AlsDebugUtility.h"
 #include "Utility/AlsLog.h"
 #include "Utility/AlsMacros.h"
 #include "Utility/AlsMontageUtility.h"
-#include "Utility/AlsUtility.h"
+#include "Utility/AlsRotation.h"
+#include "Utility/AlsVector.h"
 
 void AAlsCharacter::StartRolling(const float PlayRate)
 {
@@ -91,7 +93,7 @@ void AAlsCharacter::StartRollingImplementation(UAnimMontage* Montage, const floa
 	{
 		RollingState.TargetYawAngle = TargetYawAngle;
 
-		RefreshRotationInstant(InitialYawAngle);
+		SetRotationInstant(InitialYawAngle);
 
 		SetLocomotionAction(AlsLocomotionActionTags::Rolling);
 	}
@@ -127,9 +129,9 @@ void AAlsCharacter::RefreshRollingPhysics(const float DeltaTime)
 	}
 	else
 	{
-		TargetRotation.Yaw = UAlsMath::ExponentialDecayAngle(UE_REAL_TO_FLOAT(FRotator::NormalizeAxis(TargetRotation.Yaw)),
-		                                                     RollingState.TargetYawAngle, DeltaTime,
-		                                                     Settings->Rolling.RotationInterpolationSpeed);
+		TargetRotation.Yaw = UAlsRotation::ExponentialDecayAngle(UE_REAL_TO_FLOAT(FRotator::NormalizeAxis(TargetRotation.Yaw)),
+		                                                         RollingState.TargetYawAngle, DeltaTime,
+		                                                         Settings->Rolling.RotationInterpolationSpeed);
 
 		GetCharacterMovement()->MoveUpdatedComponent(FVector::ZeroVector, TargetRotation, false);
 	}
@@ -183,12 +185,12 @@ bool AAlsCharacter::StartMantling(const FAlsMantlingTraceSettings& TraceSettings
 	}
 
 	const auto ForwardTraceDirection{
-		UAlsMath::AngleToDirectionXY(
+		UAlsVector::AngleToDirectionXY(
 			ActorYawAngle + FMath::ClampAngle(ForwardTraceDeltaAngle, -Settings->Mantling.MaxReachAngle, Settings->Mantling.MaxReachAngle))
 	};
 
 #if ENABLE_DRAW_DEBUG
-	const auto bDisplayDebug{UAlsUtility::ShouldDisplayDebugForActor(this, UAlsConstants::MantlingDebugDisplayName())};
+	const auto bDisplayDebug{UAlsDebugUtility::ShouldDisplayDebugForActor(this, UAlsConstants::MantlingDebugDisplayName())};
 #endif
 
 	const auto* Capsule{GetCapsuleComponent()};
@@ -232,7 +234,7 @@ bool AAlsCharacter::StartMantling(const FAlsMantlingTraceSettings& TraceSettings
 #if ENABLE_DRAW_DEBUG
 		if (bDisplayDebug)
 		{
-			UAlsUtility::DrawDebugSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
 			                                                    ForwardTraceCapsuleHalfHeight, false, ForwardTraceHit, {0.0f, 0.25f, 1.0f},
 			                                                    {0.0f, 0.75f, 1.0f}, TraceSettings.bDrawFailedTraces ? 5.0f : 0.0f);
 		}
@@ -285,11 +287,11 @@ bool AAlsCharacter::StartMantling(const FAlsMantlingTraceSettings& TraceSettings
 #if ENABLE_DRAW_DEBUG
 		if (bDisplayDebug)
 		{
-			UAlsUtility::DrawDebugSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
 			                                                    ForwardTraceCapsuleHalfHeight, true, ForwardTraceHit, {0.0f, 0.25f, 1.0f},
 			                                                    {0.0f, 0.75f, 1.0f}, TraceSettings.bDrawFailedTraces ? 5.0f : 0.0f);
 
-			UAlsUtility::DrawDebugSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd, TraceCapsuleRadius,
 			                                        false, DownwardTraceHit, {0.25f, 0.0f, 1.0f}, {0.75f, 0.0f, 1.0f},
 			                                        TraceSettings.bDrawFailedTraces ? 7.5f : 0.0f);
 		}
@@ -317,11 +319,11 @@ bool AAlsCharacter::StartMantling(const FAlsMantlingTraceSettings& TraceSettings
 #if ENABLE_DRAW_DEBUG
 		if (bDisplayDebug)
 		{
-			UAlsUtility::DrawDebugSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
 			                                                    ForwardTraceCapsuleHalfHeight, true, ForwardTraceHit, {0.0f, 0.25f, 1.0f},
 			                                                    {0.0f, 0.75f, 1.0f}, TraceSettings.bDrawFailedTraces ? 5.0f : 0.0f);
 
-			UAlsUtility::DrawDebugSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd, TraceCapsuleRadius,
 			                                        false, DownwardTraceHit, {0.25f, 0.0f, 1.0f}, {0.75f, 0.0f, 1.0f},
 			                                        TraceSettings.bDrawFailedTraces ? 7.5f : 0.0f);
 
@@ -357,12 +359,12 @@ bool AAlsCharacter::StartMantling(const FAlsMantlingTraceSettings& TraceSettings
 #if ENABLE_DRAW_DEBUG
 		if (bDisplayDebug)
 		{
-			UAlsUtility::DrawDebugSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
 			                                                    ForwardTraceCapsuleHalfHeight, true, ForwardTraceHit,
 			                                                    {0.0f, 0.25f, 1.0f},
 			                                                    {0.0f, 0.75f, 1.0f}, TraceSettings.bDrawFailedTraces ? 5.0f : 0.0f);
 
-			UAlsUtility::DrawDebugSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd, TraceCapsuleRadius,
+			UAlsDebugUtility::DrawSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd, TraceCapsuleRadius,
 			                                        false, DownwardTraceHit, {0.25f, 0.0f, 1.0f}, {0.75f, 0.0f, 1.0f},
 			                                        TraceSettings.bDrawFailedTraces ? 7.5f : 0.0f);
 
@@ -377,11 +379,11 @@ bool AAlsCharacter::StartMantling(const FAlsMantlingTraceSettings& TraceSettings
 #if ENABLE_DRAW_DEBUG
 	if (bDisplayDebug)
 	{
-		UAlsUtility::DrawDebugSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
+		UAlsDebugUtility::DrawSweepSingleCapsuleAlternative(GetWorld(), ForwardTraceStart, ForwardTraceEnd, TraceCapsuleRadius,
 		                                                    ForwardTraceCapsuleHalfHeight, true, ForwardTraceHit,
 		                                                    {0.0f, 0.25f, 1.0f}, {0.0f, 0.75f, 1.0f}, 5.0f);
 
-		UAlsUtility::DrawDebugSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd,
+		UAlsDebugUtility::DrawSweepSingleSphere(GetWorld(), DownwardTraceStart, DownwardTraceEnd,
 		                                        TraceCapsuleRadius, true, DownwardTraceHit,
 		                                        {0.25f, 0.0f, 1.0f}, {0.75f, 0.0f, 1.0f}, 7.5f);
 	}
@@ -768,6 +770,7 @@ void AAlsCharacter::StartRagdollingImplementation()
 	{
 		// Limit the ragdoll's speed for a few frames, because for some unclear reason,
 		// it can get a much higher initial speed than the character's last speed.
+
 		// TODO Find a better solution or wait for a fix in future engine versions.
 
 		static constexpr auto MinSpeedLimit{200.0f};
@@ -775,7 +778,7 @@ void AAlsCharacter::StartRagdollingImplementation()
 		RagdollingState.SpeedLimitFrameTimeRemaining = 8;
 		RagdollingState.SpeedLimit = FMath::Max(MinSpeedLimit, UE_REAL_TO_FLOAT(LocomotionState.Velocity.Size()));
 
-		LimitRagdollSpeed();
+		ConstraintRagdollSpeed();
 	}
 
 	if (GetLocalRole() >= ROLE_Authority)
@@ -911,7 +914,7 @@ void AAlsCharacter::RefreshRagdolling(const float DeltaTime)
 	{
 		RagdollingState.SpeedLimitFrameTimeRemaining -= 1;
 
-		LimitRagdollSpeed();
+		ConstraintRagdollSpeed();
 	}
 }
 
@@ -940,7 +943,7 @@ FVector AAlsCharacter::RagdollTraceGround(bool& bGrounded) const
 	                                             QueryParameters, ResponseParameters);
 
 	// #if ENABLE_DRAW_DEBUG
-	// 	UAlsUtility::DrawDebugSweepSingleSphere(GetWorld(), TraceStart, TraceEnd, CapsuleRadius,
+	// 	UAlsDebugUtility::DrawSweepSingleSphere(GetWorld(), TraceStart, TraceEnd, CapsuleRadius,
 	// 	                                        bGrounded, Hit, {0.0f, 0.25f, 1.0f},
 	// 	                                        {0.0f, 0.75f, 1.0f}, 0.0f);
 	// #endif
@@ -953,7 +956,7 @@ FVector AAlsCharacter::RagdollTraceGround(bool& bGrounded) const
 	};
 }
 
-void AAlsCharacter::LimitRagdollSpeed() const
+void AAlsCharacter::ConstraintRagdollSpeed() const
 {
 	GetMesh()->ForEachBodyBelow(NAME_None, true, false, [this](FBodyInstance* Body)
 	{

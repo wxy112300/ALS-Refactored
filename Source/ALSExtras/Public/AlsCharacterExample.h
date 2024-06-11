@@ -65,12 +65,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Als Character Example", Meta = (ClampMin = 0, ForceUnits = "x"))
 	float LookRightMouseSensitivity{1.0f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Als Character Example",
-		Meta = (ClampMin = 0, ForceUnits = "deg/s"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Als Character Example", Meta = (ClampMin = 0, ForceUnits = "deg/s"))
 	float LookUpRate{90.0f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Als Character Example",
-		Meta = (ClampMin = 0, ForceUnits = "deg/s"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Als Character Example", Meta = (ClampMin = 0, ForceUnits = "deg/s"))
 	float LookRightRate{240.0f};
 
 public:
@@ -89,48 +87,31 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* Input) override;
 
 private:
+	virtual void Input_OnLookMouse(const FInputActionValue& ActionValue);
 
-	
-	//void Input_OnLookMouse(const FInputActionValue& ActionValue);
-	//Mouse Input Action
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnLookMouse(const FVector2D& Value);
+	virtual void Input_OnLook(const FInputActionValue& ActionValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnLook(const FVector2D& Value);
+	virtual void Input_OnMove(const FInputActionValue& ActionValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnMove(const FVector2D& Value);
+	virtual void Input_OnSprint(const FInputActionValue& ActionValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnSprint(bool Value);
+	virtual void Input_OnWalk();
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnWalk();
+	virtual void Input_OnCrouch();
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnCrouch();
+	virtual void Input_OnJump(const FInputActionValue& ActionValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnJump(bool Value);
+	virtual void Input_OnAim(const FInputActionValue& ActionValue);
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnAim(bool Value);
+	virtual void Input_OnRagdoll();
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnRagdoll();
+	virtual void Input_OnRoll();
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnRoll();
+	virtual void Input_OnRotationMode();
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnRotationMode();
+	virtual void Input_OnViewMode();
 
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnViewMode();
-
-	UFUNCTION(BlueprintCallable, Category = "Als|Input")
-	void Input_OnSwitchShoulder();
+	virtual void Input_OnSwitchShoulder();
 
 	// Debug
 
