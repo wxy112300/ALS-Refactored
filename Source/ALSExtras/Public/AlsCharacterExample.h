@@ -87,30 +87,49 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* Input) override;
 
 private:
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Input_OnLookMouseBP(const FVector2D& Value);
 	virtual void Input_OnLookMouse(const FInputActionValue& ActionValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Input_OnLookBP(const FVector2D& Value);
 	virtual void Input_OnLook(const FInputActionValue& ActionValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Input_OnMoveBP(const FVector2D& Value);
 	virtual void Input_OnMove(const FInputActionValue& ActionValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Input_OnSprintBP(bool Value);
 	virtual void Input_OnSprint(const FInputActionValue& ActionValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnWalk();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnCrouch();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Input_OnJumpBP(bool Value);
 	virtual void Input_OnJump(const FInputActionValue& ActionValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void Input_OnAimBP(bool Value);
 	virtual void Input_OnAim(const FInputActionValue& ActionValue);
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnRagdoll();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnRoll();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnRotationMode();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnViewMode();
 
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void Input_OnSwitchShoulder();
 
 	// Debug

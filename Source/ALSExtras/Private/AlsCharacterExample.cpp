@@ -83,12 +83,22 @@ void AAlsCharacterExample::SetupPlayerInputComponent(UInputComponent* Input)
 	}
 }
 
+void AAlsCharacterExample::Input_OnLookMouseBP(const FVector2D& Value)
+{
+	Input_OnLookMouse(Value);
+}
+
 void AAlsCharacterExample::Input_OnLookMouse(const FInputActionValue& ActionValue)
 {
 	const FVector2f Value{ActionValue.Get<FVector2D>()};
 
 	AddControllerPitchInput(Value.Y * LookUpMouseSensitivity);
 	AddControllerYawInput(Value.X * LookRightMouseSensitivity);
+}
+
+void AAlsCharacterExample::Input_OnLookBP(const FVector2D& Value)
+{
+	Input_OnLook(Value);
 }
 
 void AAlsCharacterExample::Input_OnLook(const FInputActionValue& ActionValue)
@@ -99,6 +109,11 @@ void AAlsCharacterExample::Input_OnLook(const FInputActionValue& ActionValue)
 	AddControllerYawInput(Value.X * LookRightRate);
 }
 
+void AAlsCharacterExample::Input_OnMoveBP(const FVector2D& Value)
+{
+	Input_OnMove(Value);
+}
+
 void AAlsCharacterExample::Input_OnMove(const FInputActionValue& ActionValue)
 {
 	const auto Value{UAlsVector::ClampMagnitude012D(ActionValue.Get<FVector2D>())};
@@ -107,6 +122,11 @@ void AAlsCharacterExample::Input_OnMove(const FInputActionValue& ActionValue)
 	const auto RightDirection{UAlsVector::PerpendicularCounterClockwiseXY(ForwardDirection)};
 
 	AddMovementInput(ForwardDirection * Value.Y + RightDirection * Value.X);
+}
+
+void AAlsCharacterExample::Input_OnSprintBP(bool Value)
+{
+	Input_OnSprint(Value);
 }
 
 void AAlsCharacterExample::Input_OnSprint(const FInputActionValue& ActionValue)
@@ -138,6 +158,11 @@ void AAlsCharacterExample::Input_OnCrouch()
 	}
 }
 
+void AAlsCharacterExample::Input_OnJumpBP(bool Value)
+{
+	Input_OnJump(Value);
+}
+
 void AAlsCharacterExample::Input_OnJump(const FInputActionValue& ActionValue)
 {
 	if (ActionValue.Get<bool>())
@@ -164,6 +189,11 @@ void AAlsCharacterExample::Input_OnJump(const FInputActionValue& ActionValue)
 	{
 		StopJumping();
 	}
+}
+
+void AAlsCharacterExample::Input_OnAimBP(bool Value)
+{
+	Input_OnAim(Value);
 }
 
 void AAlsCharacterExample::Input_OnAim(const FInputActionValue& ActionValue)
